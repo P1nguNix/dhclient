@@ -14,7 +14,7 @@ help(){ # Help Function
 	echo -e " -d stand for setting dynamicly your IP address and Subnet Mask via DHCP Algorithm"
 	echo -e " -h stand for printing this actual help message"
 }
-while getopts ":m:r:d:h" option
+while getopts ":m:r:w:d:h" option
 # getopts: Specifying a colon (:) after a character causes the shell to query an argument after a given parameter
 # For exemple, after 'm' character there's a colon because 'm' stand for 'manual' but we need to specify the working interface.
 # If an argument is required but not provided (i.e, '-m' without specifying an interface) then the script will refer to the colon case (:).
@@ -26,18 +26,30 @@ do
 			read -p "New IP Address (e.g 192.168.0.10) : " ipaddress
 			read -p "New Subnet Mask dotted (e.g 255.255.255.0) : " subnetmask
 			# Applying the given parameters to the specified interface
-			sudo ipconfig set ${OPTARG} MANUAL $ipaddress $subnetmask
+			ipconfig set ${OPTARG} MANUAL $ipaddress $subnetmask
 			echo "New changes applied"
 			exit 0
 		;;
 		r ) # r flag stand for release
 			# After that instruction, the specified interface would have no mode, causing the script to be re-executed with a specified mode.
-			sudo ipconfig set ${OPTARG} NONE
+			ipconfig set ${OPTARG} NONE
+			echo "Lease released"
 			exit 0
+		;;
+		w ) # w flag stand for Wi-Fi
+			# Enabling or Disabling Wi-Fi
+			if [ ${OPTARG} = "on" -o ${OPTARG} = "off" ]
+			then
+				networksetup -setairportpower en0 ${OPTARG}
+				exit 0
+			else
+				echo -e "Invalid option: -${OPTARG}"
+			fi
+			
 		;;
 		d ) # d flag stand for DHCP
 			echo -e "Setting DHCP mode for the interface ${OPTARG}."
-			sudo ipconfig set ${OPTARG} DHCP
+			ipconfig set ${OPTARG} DHCP
 			sleep 2
 			ipconfig getpacket ${OPTARG}
 			exit 0
@@ -64,3 +76,5 @@ then
 	echo -e "$(help)\nNo Parameter given"
 	exit 1
 fi
+# sudo networksetup -setairportpower en0 on > Permet d'activer le wi-fi
+# sudo networksetup -setairportpower en0 off > Permet de désactiver le wi-fi
