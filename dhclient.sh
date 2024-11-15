@@ -32,20 +32,30 @@ do
 		;;
 		r ) # r flag stand for release
 			# After that instruction, the specified interface would have no mode, causing the script to be re-executed with a specified mode.
+			echo -e "Releasing ..."
 			ipconfig set ${OPTARG} NONE
 			echo "Lease released"
 			exit 0
 		;;
 		w ) # w flag stand for Wi-Fi
 			# Enabling or Disabling Wi-Fi
-			if [ ${OPTARG} = "on" -o ${OPTARG} = "off" ]
+			if [ ${OPTARG} = "on" ]
 			then
+				echo -e "Enabling Wi-Fi ..."
 				networksetup -setairportpower en0 ${OPTARG}
+				echo -e "Done !"
+				exit 0
+			elif [ ${OPTARG} = "off" ]
+			then
+				echo -e "Disabling Wi-Fi ..."
+				networksetup -setairportpower en0 ${OPTARG}
+				echo -e "Done !"
 				exit 0
 			else
 				echo -e "Invalid option: -${OPTARG}"
+				exit 1
 			fi
-			
+
 		;;
 		d ) # d flag stand for DHCP
 			echo -e "Setting DHCP mode for the interface ${OPTARG}."
@@ -76,5 +86,3 @@ then
 	echo -e "$(help)\nNo Parameter given"
 	exit 1
 fi
-# sudo networksetup -setairportpower en0 on > Permet d'activer le wi-fi
-# sudo networksetup -setairportpower en0 off > Permet de désactiver le wi-fi
