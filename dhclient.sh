@@ -58,10 +58,17 @@ do
 
 		;;
 		d ) # d flag stand for DHCP
-			echo -e "Setting DHCP mode for the interface ${OPTARG}."
+			echo -e "Configuration du mode DHCP pour l'interface ${OPTARG}."
 			ipconfig set ${OPTARG} DHCP
-			sleep 2
-			ipconfig getpacket ${OPTARG}
+			ipconfig waitall
+			sleep 4
+			echo -e "Nouveau Bail:"
+			echo -e "Adresse IP: $(ipconfig getifaddr ${OPTARG})"
+			echo -e "Masque de sous-réseau: $(ipconfig getoption ${OPTARG} subnet_mask)"
+			echo -e "Passerelle par défaut: $(ipconfig getoption ${OPTARG} router)"
+			echo -e "Serveur DHCP: $(ipconfig getoption ${OPTARG} server_identifier)"
+			echo -e "Durée du bail DHCP: $(ipconfig getoption ${OPTARG} lease_time) secondes"
+			echo -e "Serveur DNS: $(ipconfig getoption ${OPTARG} domain_name_server)"
 			exit 0
 		;;
 		:) # : flag stand for error checking (i.e: parameter requested and no given argument)
